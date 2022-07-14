@@ -1,0 +1,53 @@
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Poppins', sans-serif;
+}
+
+html {
+  --dark-main: rgb(31, 31, 31);
+  --light-main: rgb(249, 249, 249);
+  --light-accent: hsl(211, 88%, 90%);
+}
+
+
+a, img {
+  display: inline-block;
+}
+
+button {
+  cursor: pointer;
+}
+
+a, button, input, select, textarea {
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+a:focus, button:focus, input:focus, select:focus, textarea:focus {
+  outline: none;
+}
+
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline-offset: 3px;
+  outline-style: dashed;
+  outline-width: 1px;
+  outline-color: var(--dark-main);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-delay: -1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    background-attachment: initial !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+}
