@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:deploy": "env-cmd -f .env npm run build && firebase deploy",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -16,6 +17,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.3.3",
+    "env-cmd": "^10.1.0",
     "sass": "^1.52.3",
     "vite": "^2.9.9"
   }
