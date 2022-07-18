@@ -1,6 +1,6 @@
 # Project "HelloChat"
 
-A live chat app with rooms. You can check it [here](https://test-chat-837ce.web.app/).
+A live chat app with rooms. Desktop only. You can check it [here](https://test-chat-837ce.web.app/).
 
 ## Technologies used:
 
