@@ -13,7 +13,6 @@ const msgsSnapshotWatcher = ref(null);
 const scrollMsgsTimeout = ref(null);
 
 
-const messageInput = ref("");
 const messageInputElement = ref(null);
 const msgsBox = ref(null);
 const emojiBtn = ref(null);
@@ -31,18 +30,22 @@ function copyRoomID() {
   return () => clearTimeout(timeout)
 }
 
-function sendMessage() {
+function sendMessage(e) {
+  e.preventDefault();
   const currentUser = JSON.parse(localStorage.getItem("current-user"));
   const currentTime = new Date().toLocaleTimeString()
-  if (!messageInput.value) return
-  const message = {
-    text: messageInput.value,
-    username: currentUser,
-    time: `${currentTime.split(":")[0]}:${currentTime.split(":")[1]} ${currentTime.split(" ")[1]}`
+  if (!messageInputElement.value.textContent) {
+    return;
+  } else {
+    const message = {
+      text: messageInputElement.value.textContent,
+      username: currentUser,
+      time: `${currentTime.split(":")[0]}:${currentTime.split(":")[1]} ${currentTime.split(" ")[1]}`
+    }
+    messageInputElement.value.textContent = "";
+    emojiContainer.value.classList.remove("open-emoji");
+    chatState.addMessage(message);
   }
-  messageInput.value = "";
-  emojiContainer.value.classList.remove("open-emoji");
-  chatState.addMessage(message);
 }
 
 onMounted(() => {
@@ -52,8 +55,8 @@ onMounted(() => {
     rootElement: emojiContainer.value,
   })
   picker.addEventListener("emoji:select", (e) => {
-    messageInput.value = `${messageInput.value}${e.emoji}`;
-    messageInputElement.value.focus()
+    messageInputElement.value.textContent = `${messageInputElement.value.textContent}${e.emoji}`;
+    messageInputElement.value.focus();
   })
   usersSnapshotWatcher.value = wathcUsersUpdate(currentRoom)
   msgsSnapshotWatcher.value = watchMessagesUpdate(currentRoom)
@@ -174,11 +177,14 @@ onUnmounted(() => {
           </div>
         </div>
       </TransitionGroup>
-      <form class="send-message" @submit.prevent="sendMessage">
+      <div class="send-message">
         <div ref="emojiContainer" class="emoji-container"></div>
         <div class="send-box">
-          <input ref="messageInputElement" v-model="messageInput" type="text" name="message">
-          <div ref="emojiBtn" class="emoji-trigger" @click="toggleEmojies">
+          <div class="input-box">
+            <p class="input" ref="messageInputElement" contenteditable="true" spellcheck="true"
+              @keydown.enter.exact="sendMessage"></p>
+          </div>
+          <button ref="emojiBtn" class="emoji-trigger" @click="toggleEmojies" title="emojies">
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
               id="Layer_1" x="0px" y="0px" viewBox="0 0 485 485" style="enable-background:new 0 0 485 485;"
               xml:space="preserve">
@@ -191,8 +197,8 @@ onUnmounted(() => {
               <path
                 d="M242.5,355c-46.911,0-89.35-29.619-105.604-73.703l-28.148,10.378C129.329,347.496,183.08,385,242.5,385   s113.171-37.504,133.752-93.325l-28.148-10.378C331.85,325.381,289.411,355,242.5,355z" />
             </svg>
-          </div>
-          <button type="submit" title="send">
+          </button>
+          <button type="submit" title="send" @click="sendMessage">
             <svg viewBox="0 0 30 26" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M29.5714 13.7102C29.8359 13.5669 30 13.2951 30 13C30 12.7049 29.8359 12.433 29.5714 12.2897L25.7675 10.2293C18.2733 6.16994 10.3732 2.86793 2.19035 0.374724L1.0819 0.0369916C0.828864 -0.040104 0.553306 0.00478081 0.339721 0.157883C0.126133 0.310984 0 0.554035 0 0.812506V10.1562C0 10.5884 0.34693 10.9449 0.789534 10.9676L2.47227 11.054C6.57495 11.2645 10.6526 11.8071 14.6631 12.676L15.0603 12.7621C15.1487 12.7812 15.187 12.8164 15.2083 12.8444C15.2351 12.8797 15.2561 12.934 15.2561 13C15.2561 13.066 15.2351 13.1203 15.2083 13.1556C15.187 13.1836 15.1487 13.2188 15.0603 13.2379L14.6632 13.324C10.6526 14.1929 6.57494 14.7355 2.47223 14.946L0.789534 15.0324C0.34693 15.0551 0 15.4116 0 15.8437V25.1875C0 25.446 0.126132 25.689 0.33972 25.8421C0.553305 25.9952 0.828863 26.0401 1.08189 25.963L2.19037 25.6253C10.3732 23.1321 18.2733 19.8301 25.7675 15.7707L29.5714 13.7102Z"
@@ -200,7 +206,7 @@ onUnmounted(() => {
             </svg>
           </button>
         </div>
-      </form>
+      </div>
     </div>
 
     <div ref="copyModal" class="copyModal">
@@ -566,24 +572,21 @@ onUnmounted(() => {
         position: relative;
         display: flex;
         align-items: center;
-
+        gap: 0.5rem;
 
 
         .emoji-trigger {
-          position: absolute;
-          top: 0;
-          right: 3rem;
           padding: 0.2rem;
           cursor: pointer;
-          width: 2.2rem;
-          height: 2.2rem;
+          width: 2.4rem;
+          height: 2.4rem;
           border: none;
           background: none;
           will-change: transform;
           transition: filter 0.3s ease, transform 0.1s ease;
 
           &:hover {
-            filter: brightness(150%);
+            filter: contrast(70%);
           }
 
           &:active {
@@ -595,33 +598,44 @@ onUnmounted(() => {
             height: 100%;
 
             & path {
-              fill: hsl(208, 82%, 20%);
+              fill: hsl(0, 0%, 100%);
             }
           }
         }
 
-        input {
+        .input-box {
           width: 100%;
-          padding: 0.4rem;
-          border-radius: 0.5rem;
-          border: none;
+          max-height: 4rem;
           box-shadow: 0 0 15px hsla(209, 82%, 6%, 0.4), 0 0 15px hsla(209, 82%, 6%, 0.4);
+          background-color: #fff;
+          border-radius: 0.5rem;
+          overflow: hidden;
+
+          .input {
+            width: 100%;
+            max-height: 4rem;
+            line-height: 1.5;
+            padding: 0.4rem;
+            border-radius: 0.5rem;
+            overflow-y: scroll;
+
+            &::-webkit-scrollbar {
+              display: none;
+            }
+          }
         }
 
         button {
-          position: absolute;
-          top: 0;
-          right: 0.2rem;
           border: none;
           background: none;
           padding: 0.1rem;
-          width: 2.2rem;
-          height: 100%;
+          width: 2.4rem;
+          height: 2.4rem;
           will-change: transform;
           transition: filter 0.3s ease, transform 0.1s ease;
 
           &:hover {
-            filter: brightness(150%);
+            filter: contrast(70%);
           }
 
           &:active {
@@ -634,7 +648,7 @@ onUnmounted(() => {
 
 
             & path {
-              fill: hsl(208, 82%, 20%);
+              fill: hsl(0, 0%, 100%);
             }
           }
         }
