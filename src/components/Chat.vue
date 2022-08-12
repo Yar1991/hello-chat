@@ -2,7 +2,7 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useChatStore } from "../store"
 import { router } from "../router";
-import { wathcUsersUpdate, watchMessagesUpdate } from "../firebase"
+import { watchUsersUpdate, watchMessagesUpdate } from "../firebase"
 import { createPicker } from "picmo"
 
 
@@ -40,7 +40,7 @@ function sendMessage(e) {
     const message = {
       text: messageInputElement.value.textContent,
       username: currentUser,
-      time: `${currentTime.split(":")[0]}:${currentTime.split(":")[1]} ${currentTime.split(" ")[1]}`
+      time: `${currentTime.split(":")[0]}:${currentTime.split(":")[1]}`
     }
     messageInputElement.value.textContent = "";
     emojiContainer.value.classList.remove("open-emoji");
@@ -58,7 +58,7 @@ onMounted(() => {
     messageInputElement.value.textContent = `${messageInputElement.value.textContent}${e.emoji}`;
     messageInputElement.value.focus();
   })
-  usersSnapshotWatcher.value = wathcUsersUpdate(currentRoom)
+  usersSnapshotWatcher.value = watchUsersUpdate(currentRoom)
   msgsSnapshotWatcher.value = watchMessagesUpdate(currentRoom)
   scrollMsgsTimeout.value = setTimeout(() => {
     msgsElement.scroll({
@@ -80,7 +80,7 @@ const msgWatcher = watch(() => chatState.allMessages, () => {
   }, 300)
 })
 
-function toggleEmojies() {
+function toggleEmojis() {
   if (emojiContainer.value.classList.contains("open-emoji")) {
     emojiContainer.value.classList.remove("open-emoji");
   } else {
@@ -184,7 +184,7 @@ onUnmounted(() => {
             <p class="input" ref="messageInputElement" contenteditable="true" spellcheck="true"
               @keydown.enter.exact="sendMessage"></p>
           </div>
-          <button ref="emojiBtn" class="emoji-trigger" @click="toggleEmojies" title="emojies">
+          <button ref="emojiBtn" class="emoji-trigger" @click="toggleEmojis" title="emojis">
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
               id="Layer_1" x="0px" y="0px" viewBox="0 0 485 485" style="enable-background:new 0 0 485 485;"
               xml:space="preserve">

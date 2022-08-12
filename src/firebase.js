@@ -96,7 +96,7 @@ export async function removeFromRoom(roomID, username) {
   }
 }
 
-export function wathcUsersUpdate(roomID) {
+export function watchUsersUpdate(roomID) {
   const chatState = useChatStore();
   return onSnapshot(collection(db, `rooms/${roomID}/users`), (snapshot) => {
     const allUsers = [];
